@@ -1,6 +1,4 @@
 package org.apalma.springcloud.msvc.usuarios.controllers;
-
-import jakarta.validation.Valid;
 import org.apalma.springcloud.msvc.usuarios.model.entity.Usuario;
 import org.apalma.springcloud.msvc.usuarios.repositories.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,9 +75,7 @@ public class UsuarioController {
 
     private static ResponseEntity<Map<String, String>> validar(BindingResult result) {
         Map<String, String> errors= new HashMap<>();
-        result.getFieldErrors().forEach(error -> {
-            errors.put(error.getField(), "Error: "+error.getDefaultMessage());
-        });
+        result.getFieldErrors().forEach(error -> errors.put(error.getField(), "Error: "+error.getDefaultMessage()));
         return ResponseEntity.badRequest().body(errors);
     }
 
