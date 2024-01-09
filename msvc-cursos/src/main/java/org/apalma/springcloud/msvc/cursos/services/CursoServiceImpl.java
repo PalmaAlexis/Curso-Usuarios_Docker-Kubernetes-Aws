@@ -46,23 +46,61 @@ public class CursoServiceImpl implements CursoService {
     }
 
     @Override
-    public Optional<Usuario> addUser(Usuario usuario, Long idCourse) {
-        Optional<Curso> optionalCurso = repository.findById(idCourse);
-        if(optionalCurso.isPresent()){
-
-
-
+    @Transactional
+    public Optional<Usuario> createUser(Usuario usuario, Long courseId) {
+        Optional<Curso> optionalCurso = repository.findById(courseId);
+        if (optionalCurso.isPresent()) {
+            //creating user
+            Usuario usuarioMsvc = usuarioClient.save(usuario);
+            //creating join for assigning user to course
+            CursoUsuario cursoUsuario = new CursoUsuario();
+            cursoUsuario.setUsuarioId(usuarioMsvc.getId());
+            //assigning user to course
+            Curso curso = optionalCurso.get();
+            curso.addUsuarioList(cursoUsuario);
+            repository.save(curso);
+            return Optional.of(usuarioMsvc);
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<Usuario> assingUser(Usuario usuario, Long idCourse) {
+    @Transactional
+    public Optional<Usuario> assignUser(Usuario usuario, Long courseId) {
+        Optional<Curso> optionalCurso = repository.findById(courseId);
+        if(optionalCurso.isPresent()){
+            //finding user by id
+            Usuario usuarioMcsv= usuarioClient.findUserById(usuario.getId());
+            //crating join
+            CursoUsuario cursoUsuario= new CursoUsuario();
+            cursoUsuario.setUsuarioId(usuarioMcsv.getId());
+            //creating course
+            Curso curso = optionalCurso.get();
+            //adding user to course
+            curso.addUsuarioList(cursoUsuario);
+            repository.save(curso);
+            return Optional.of(usuarioMcsv);
+        }
         return Optional.empty();
     }
 
     @Override
-    public Optional<Usuario> deleteUser(Usuario usuario, Long idCourse) {
+    @Transactional
+    public Optional<Usuario> unassignUser(Usuario usuario, Long courseId) {
+        Optional<Curso> optionalCurso = repository.findById(courseId);
+        if(optionalCurso.isPresent()){
+            //finding user by id
+            Usuario usuarioMcsv= usuarioClient.findUserById(usuario.getId());
+            //creating join
+            CursoUsuario cursoUsuario= new CursoUsuario();
+            cursoUsuario.setUsuarioId(usuarioMcsv.getId());
+            //creating course
+            Curso curso= optionalCurso.get();
+            //delete contains equals, and it gonna compare the ids
+            curso.deleteUsuarioList(cursoUsuario);
+            repository.save(curso);
+            return Optional.of(usuarioMcsv);
+        }
         return Optional.empty();
     }
 }

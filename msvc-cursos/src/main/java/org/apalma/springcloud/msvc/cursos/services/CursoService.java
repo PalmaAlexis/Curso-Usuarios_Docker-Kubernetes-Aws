@@ -9,10 +9,19 @@ import java.util.Optional;
 public interface CursoService {
 
     List<Curso> allCourses();
+
     Optional<Curso> findById(Long id);
+
     Curso save(Curso curso);
+
     void delete(Long id);
-    Optional<Usuario> addUser(Usuario usuario, Long idCourse); //add
-    Optional<Usuario> assingUser(Usuario usuario, Long idCourse); //assing to a course
-    Optional<Usuario> deleteUser(Usuario usuario, Long idCourse); //delete from a course
+
+    Optional<Usuario> createUser(Usuario usuario, Long courseId); //creating and assigning it
+    //we can also implement one with userId and courseId for assign and un-assign
+    Optional<Usuario> assignUser(Usuario usuario, Long courseId); //just assigning it
+    Optional<Usuario> unassignUser(Usuario usuario, Long courseId); //unassigning it
+
 }
+
+
+

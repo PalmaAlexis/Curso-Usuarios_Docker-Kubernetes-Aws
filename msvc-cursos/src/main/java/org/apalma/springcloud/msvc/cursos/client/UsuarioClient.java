@@ -10,10 +10,9 @@ import java.util.List;
 
 @FeignClient(name = "mcsv-usuarios", url = "localhost:8001")
 public interface UsuarioClient {
-
     @GetMapping("/{id}")
-    public Usuario findById(@PathVariable Long id);
+    public Usuario findUserById(@PathVariable Long id);
 
     @PostMapping
-    public Usuario save(Usuario usuario, BindingResult result);
+    public Usuario save(Usuario usuario);
 }

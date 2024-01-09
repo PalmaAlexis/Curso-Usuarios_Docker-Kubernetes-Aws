@@ -32,7 +32,7 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<?> save(Usuario usuario, BindingResult result){
+    public ResponseEntity<?> save(@RequestBody Usuario usuario, BindingResult result){
         if(result.hasErrors()){
             return validar(result);
         }

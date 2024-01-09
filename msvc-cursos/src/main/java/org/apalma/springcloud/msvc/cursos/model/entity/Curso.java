@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import org.apalma.springcloud.msvc.cursos.model.Usuario;
+import org.springframework.data.annotation.Persistent;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,16 +21,16 @@ public class Curso implements Serializable {
     @NotBlank
     private String name;
 
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "curso_id")
+    @JoinColumn(name = "course_id")
     private List<CursoUsuario> cursoUsuarios;
+
 
     @Transient
     private List<Usuario> usuarioList;
 
     public Curso() {
-        cursoUsuarios = new ArrayList<>();
+        cursoUsuarios= new ArrayList<>();
         usuarioList= new ArrayList<>();
     }
 
@@ -57,11 +58,19 @@ public class Curso implements Serializable {
         this.cursoUsuarios = cursoUsuarios;
     }
 
-    public void addCursoUsuario(CursoUsuario cursoUsuario) {
+    public List<Usuario> getUsuarioList() {
+        return usuarioList;
+    }
+
+    public void setUsuarioList(List<Usuario> usuarioList) {
+        this.usuarioList = usuarioList;
+    }
+
+    public void addUsuarioList(CursoUsuario cursoUsuario){
         cursoUsuarios.add(cursoUsuario);
     }
 
-    public void deleteCursoUsuario(CursoUsuario cursoUsuario) {
+    public void deleteUsuarioList(CursoUsuario cursoUsuario){
         cursoUsuarios.remove(cursoUsuario);
     }
 }
