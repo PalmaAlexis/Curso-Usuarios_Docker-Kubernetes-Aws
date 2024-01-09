@@ -45,4 +45,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Optional<Usuario> findByEmail(String email) {
         return repository.findByEmail(email);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Usuario> findAllByIds(Iterable<Long> ids) {
+        return (List<Usuario>) repository.findAllById(ids);
+    }
 }

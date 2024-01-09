@@ -75,14 +75,14 @@ public class CursoController {
             return ResponseEntity.internalServerError().body(Collections.singletonMap("Error: ", "error en la comunicación: " + e.getMessage()));
         }
 
-        if(optionalJoin.isPresent()){
+        if (optionalJoin.isPresent()) {
             return ResponseEntity.status(HttpStatus.CREATED).body(optionalJoin.get());
         }
         return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/assign-user/{courseId}")
-    public ResponseEntity<?> assignUser(@RequestBody Usuario usuario, @PathVariable Long courseId){
+    public ResponseEntity<?> assignUser(@RequestBody Usuario usuario, @PathVariable Long courseId) {
         Optional<Usuario> optionalJoin = null;
         try {
             optionalJoin = service.assignUser(usuario, courseId);
@@ -90,25 +90,39 @@ public class CursoController {
             return ResponseEntity.internalServerError().body(Collections.singletonMap("Error: ", "error en la comunicación: " + e.getMessage()));
         }
 
-        if(optionalJoin.isPresent()){
+        if (optionalJoin.isPresent()) {
             return ResponseEntity.status(HttpStatus.CREATED).body(optionalJoin.get());
         }
         return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/unassign-user/{courseId}")
-    public ResponseEntity<?> unassignUser(@RequestBody Usuario usuario, @PathVariable Long courseId){
+    public ResponseEntity<?> unassignUser(@RequestBody Usuario usuario, @PathVariable Long courseId) {
         Optional<Usuario> optionalJoin = null;
         try {
             optionalJoin = service.unassignUser(usuario, courseId);
         } catch (FeignException e) {
             return ResponseEntity.internalServerError().body(Collections.singletonMap("Error: ", "error en la comunicación: " + e.getMessage()));
         }
-        if(optionalJoin.isPresent()){
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        if (optionalJoin.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/users-by-course/{idCourse}")
+    public ResponseEntity<?> allUsersByCourse(@PathVariable Long idCourse) {
+        try{
+            Optional<Curso> curso = service.allUsersByCourse(idCourse);
+            if(curso.isPresent()){
+                return ResponseEntity.ok().body(curso);
+            }
+            return ResponseEntity.notFound().build();
+        }catch (FeignException e){
+            return ResponseEntity.internalServerError().body(Collections.singletonMap("Error: ","error de comunicación: "+e.getMessage()));
+        }
+    }
+
     private static ResponseEntity<Map<String, String>> validar(BindingResult result) {
         Map<String, String> errores = new HashMap<>();
         result.getFieldErrors().forEach(error -> {

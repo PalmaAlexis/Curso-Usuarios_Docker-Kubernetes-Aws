@@ -8,6 +8,6 @@ public interface UsuarioService {
     Optional<Usuario> findById(Long id);
     Usuario save(Usuario usuario);
     void delete(Long id);
-
     Optional<Usuario> findByEmail(String email);
+    List<Usuario> findAllByIds(Iterable<Long> ids);
 }

@@ -12,6 +12,8 @@ public interface CursoService {
 
     Optional<Curso> findById(Long id);
 
+    Optional<Curso> allUsersByCourse(Long courseId);
+
     Curso save(Curso curso);
 
     void delete(Long id);

@@ -29,6 +29,10 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/all-users-by-ids")
+    public ResponseEntity<?> findByAllByIds(@RequestParam List<Long> ids){
+        return ResponseEntity.ok(service.findAllByIds(ids));
+    }
     @PostMapping
     public ResponseEntity<?> save(@RequestBody Usuario usuario, BindingResult result){
         if(result.hasErrors()){
