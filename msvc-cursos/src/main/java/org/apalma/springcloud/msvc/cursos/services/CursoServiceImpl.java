@@ -8,6 +8,7 @@ import org.apalma.springcloud.msvc.cursos.repositories.CursoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +40,12 @@ public class CursoServiceImpl implements CursoService {
     //@Transactional(readOnly = true)
     public Optional<Curso> allUsersByCourse(Long courseId) {
         Optional<Curso> optionalCurso = repository.findById(courseId);
-        if (optionalCurso.isPresent()) {
-            Curso curso = optionalCurso.get();
-            if (!curso.getCursoUsuarios().isEmpty()) { //avoiding a consult with no ids
-                List<Long> usersIds = curso.getCursoUsuarios().stream().map(CursoUsuario::getUsuarioId).toList();
-                List<Usuario> usuariosList=usuarioClient.findByAllByIds(usersIds);
-                curso.setUsuarioList(usuariosList);
+        if(optionalCurso.isPresent()){
+            Curso curso= optionalCurso.get();
+            if(!curso.getCursoUsuarios().isEmpty()){ //avoiding one consult through mcsv by feign
+                List<Long> ids= curso.getCursoUsuarios().stream().map( cu -> cu.getUsuarioId()).toList();
+                List<Usuario> users= usuarioClient.findByAllByIds(ids);
+                curso.setUsuarioList(users);
             }
             return Optional.of(curso);
         }
@@ -61,6 +62,12 @@ public class CursoServiceImpl implements CursoService {
     @Transactional
     public void delete(Long id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCursoUsuario(Long userId) {
+        repository.deleteCursoUsuario(userId);
     }
 
     @Override

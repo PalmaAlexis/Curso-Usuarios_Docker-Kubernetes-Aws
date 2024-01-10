@@ -24,14 +24,14 @@ public class CursoController {
         return ResponseEntity.ok(service.allCourses());
     }
 
-    @GetMapping("/{id}")
+    /*@GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         Optional<Curso> optionalCurso = service.findById(id);
         if (optionalCurso.isPresent()) {
             return ResponseEntity.ok(optionalCurso.get());
         }
         return ResponseEntity.notFound().build();
-    }
+    }*/
 
     @PostMapping
     public ResponseEntity<?> save(@Valid @RequestBody Curso curso, BindingResult result) {
@@ -110,7 +110,13 @@ public class CursoController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/users-by-course/{idCourse}")
+    @DeleteMapping("/delete-user/{userId}")
+    public ResponseEntity<?> deleteCursoUsuario(@PathVariable Long userId){
+        service.deleteCursoUsuario(userId);
+        return ResponseEntity.noContent().build();
+    }
+    //@GetMapping("/users-by-course/{idCourse}")
+    @GetMapping("/{idCourse}")
     public ResponseEntity<?> allUsersByCourse(@PathVariable Long idCourse) {
         try{
             Optional<Curso> curso = service.allUsersByCourse(idCourse);

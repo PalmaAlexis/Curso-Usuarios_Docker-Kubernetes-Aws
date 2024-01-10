@@ -1,5 +1,6 @@
 package org.apalma.springcloud.msvc.usuarios.services;
 
+import org.apalma.springcloud.msvc.usuarios.client.cursoClient;
 import org.apalma.springcloud.msvc.usuarios.model.entity.Usuario;
 import org.apalma.springcloud.msvc.usuarios.repositories.UsuarioRepository;
 import org.apalma.springcloud.msvc.usuarios.repositories.UsuarioService;
@@ -16,6 +17,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private UsuarioRepository repository;
 
+    @Autowired
+    private cursoClient cursoClient;
     @Override
     @Transactional(readOnly = true)
     public List<Usuario> allUsuarios() {
@@ -37,6 +40,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional
     public void delete(Long id) {
+        cursoClient.deleteCursoUsuario(id);
         repository.deleteById(id);
     }
 

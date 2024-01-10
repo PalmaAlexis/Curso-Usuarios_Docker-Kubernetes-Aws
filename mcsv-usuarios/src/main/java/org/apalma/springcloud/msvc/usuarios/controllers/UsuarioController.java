@@ -1,4 +1,6 @@
 package org.apalma.springcloud.msvc.usuarios.controllers;
+
+import feign.FeignException;
 import org.apalma.springcloud.msvc.usuarios.model.entity.Usuario;
 import org.apalma.springcloud.msvc.usuarios.repositories.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,48 +18,47 @@ public class UsuarioController {
     private UsuarioService service;
 
     @GetMapping
-    public List<Usuario> allUsuarios(){
+    public List<Usuario> allUsuarios() {
         return service.allUsuarios();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id){
+    public ResponseEntity<?> findById(@PathVariable Long id) {
         Optional<Usuario> usuarioOptional = service.findById(id);
-        if(usuarioOptional.isPresent()){
+        if (usuarioOptional.isPresent()) {
             return ResponseEntity.ok(usuarioOptional.get());
         }
         return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/all-users-by-ids")
-    public ResponseEntity<?> findByAllByIds(@RequestParam List<Long> ids){
+    public ResponseEntity<?> findByAllByIds(@RequestParam List<Long> ids) {
         return ResponseEntity.ok(service.findAllByIds(ids));
     }
+
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody Usuario usuario, BindingResult result){
-        if(result.hasErrors()){
+    public ResponseEntity<?> save(@RequestBody Usuario usuario, BindingResult result) {
+        if (result.hasErrors()) {
             return validar(result);
         }
-        if(service.findByEmail(usuario.getEmail()).isPresent()){
-            return ResponseEntity.badRequest().body(Collections.singletonMap("Error: ","Email ya existe"));
+        if (service.findByEmail(usuario.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("Error: ", "Email ya existe"));
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(usuario));
     }
 
-
-
     @PutMapping("/{id}")
-    public  ResponseEntity<?> edit(@RequestBody Usuario usuario, BindingResult result, @PathVariable Long id){
+    public ResponseEntity<?> edit(@RequestBody Usuario usuario, BindingResult result, @PathVariable Long id) {
         //VALIDANDO ANNOTATIONS
-        if(result.hasErrors()){
+        if (result.hasErrors()) {
             return validar(result);
         }
         Optional<Usuario> usuarioOptional = service.findById(id);
-        if(usuarioOptional.isPresent()){
-            Usuario original= usuarioOptional.get();
+        if (usuarioOptional.isPresent()) {
+            Usuario original = usuarioOptional.get();
             //VALIDADO EMAIL
-            if(usuario.getEmail().equalsIgnoreCase(original.getEmail())  || service.findByEmail(usuario.getEmail()).isPresent()){
-                return ResponseEntity.badRequest().body(Collections.singletonMap("Error: ","Email ya existe"));
+            if (usuario.getEmail().equalsIgnoreCase(original.getEmail()) || service.findByEmail(usuario.getEmail()).isPresent()) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("Error: ", "Email ya existe"));
             }
             original.setName(usuario.getName());
             original.setEmail(usuario.getEmail());
@@ -68,18 +69,22 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id){
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         Optional<Usuario> usuarioOptional = service.findById(id);
-        if(usuarioOptional.isPresent()){
-            service.delete(id);
+        if (usuarioOptional.isPresent()) {
+            try{
+                service.delete(id);
+            }catch (FeignException e){
+                return ResponseEntity.internalServerError().body(Collections.singletonMap("Error: ","error en la comunicación: "+e.getMessage()));
+            }
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
 
     private static ResponseEntity<Map<String, String>> validar(BindingResult result) {
-        Map<String, String> errors= new HashMap<>();
-        result.getFieldErrors().forEach(error -> errors.put(error.getField(), "Error: "+error.getDefaultMessage()));
+        Map<String, String> errors = new HashMap<>();
+        result.getFieldErrors().forEach(error -> errors.put(error.getField(), "Error: " + error.getDefaultMessage()));
         return ResponseEntity.badRequest().body(errors);
     }
 
